@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+*.egg-info/
+
+# Node / UI
+node_modules/
+.next/
+dist/
+build/
+
+# Foundry generated output (regenerated from casting.yaml)
+pours/
+
+# SigNoz / demo data
+data/
+*.db
+*.sqlite
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.log
