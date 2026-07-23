@@ -21,3 +21,14 @@ def test_gather_populates_all_channels():
 def test_blast_radius_counts_downstream():
     ev = gather(_inc(), FakeBackend())
     assert blast_radius(ev) == 2
+
+class MultiServiceBackend:
+    def get_metric(self, *a): return 0.42
+    def get_traces(self, *a, **k): return [{"name": "POST /checkout", "status": "ERROR"}]
+    def get_logs(self, *a, **k): return [{"body": "cart error"}]
+    def get_topology(self):
+        return {"cartservice": ["checkoutservice"], "adservice": ["rec1", "rec2", "rec3"]}
+
+def test_blast_radius_is_scoped_to_incident_service():
+    ev = gather(_inc(), MultiServiceBackend())
+    assert blast_radius(ev) == 1
