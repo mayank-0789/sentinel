@@ -1,0 +1,22 @@
+rules:
+  - id: flag-off
+    action_type: flag
+    risk: low
+    auto_execute_if_confidence_gte: 0.75
+    requires_approval: false
+    max_blast_radius: 2
+    allowed_targets: [cartServiceFailure, paymentServiceFailure, paymentServiceUnreachable]
+  - id: restart-svc
+    action_type: restart
+    risk: med
+    auto_execute_if_confidence_gte: 0.85
+    requires_approval: false
+    max_blast_radius: 1
+    allowed_targets: [paymentservice, cartservice]
+  - id: scale-svc
+    action_type: scale
+    risk: high
+    auto_execute_if_confidence_gte: 0.99
+    requires_approval: true
+    max_blast_radius: 1
+    allowed_targets: [adservice, recommendationservice]
