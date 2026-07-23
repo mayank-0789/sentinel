@@ -12,9 +12,12 @@ class Policy:
     def decide(self, hypothesis: Hypothesis, blast_radius: int) -> Decision:
         action = hypothesis.proposed_action
         rule = self._rule_for(action.type.value)
-        if rule is None or action.target not in rule.allowed_targets:
-            return Decision(DecisionMode.ESCALATE, action, rule.id if rule else "",
-                            "no matching rule or target not allowed")
+        if rule is None:
+            return Decision(DecisionMode.ESCALATE, action, "",
+                            f"no policy rule for action type {action.type.value}")
+        if action.target not in rule.allowed_targets:
+            return Decision(DecisionMode.ESCALATE, action, rule.id,
+                            f"target {action.target} not in allowed_targets")
         if (rule.requires_approval or blast_radius > rule.max_blast_radius
                 or hypothesis.confidence < rule.auto_execute_if_confidence_gte):
             return Decision(DecisionMode.APPROVE, action, rule.id,
@@ -23,5 +26,6 @@ class Policy:
                         f"auto: conf={hypothesis.confidence} within guards")
 
 def load_policy(path: str) -> Policy:
-    data = yaml.safe_load(open(path))
+    with open(path) as f:
+        data = yaml.safe_load(f)
     return Policy([PolicyRule(**r) for r in data["rules"]])
