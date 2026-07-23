@@ -1,11 +1,18 @@
 import json, sqlite3
 from dataclasses import asdict, is_dataclass
 from datetime import datetime
+from enum import Enum
 from sentinel.models import Incident
 
 def _enc(o):
-    if is_dataclass(o):
-        return {k: _enc(v) for k, v in asdict(o).items()}
+    if is_dataclass(o) and not isinstance(o, type):
+        return _enc(asdict(o))
+    if isinstance(o, dict):
+        return {k: _enc(v) for k, v in o.items()}
+    if isinstance(o, (list, tuple)):
+        return [_enc(v) for v in o]
+    if isinstance(o, Enum):
+        return o.value
     if isinstance(o, datetime):
         return o.isoformat()
     return o
