@@ -1,4 +1,5 @@
 import json
+import os
 from datetime import datetime, timezone
 from sentinel.models import Action, ActionType, RemediationResult
 
@@ -10,9 +11,13 @@ class FlagActuator:
         variant = action.params.get("variant", "off")
         now = datetime.now(timezone.utc)
         try:
-            cfg = json.load(open(self.path))
+            with open(self.path) as f:
+                cfg = json.load(f)
             cfg["flags"][action.target]["defaultVariant"] = variant
-            json.dump(cfg, open(self.path, "w"), indent=2)
+            tmp_path = self.path + ".tmp"
+            with open(tmp_path, "w") as f:
+                json.dump(cfg, f, indent=2)
+            os.replace(tmp_path, self.path)
             return RemediationResult(action, now, True, f"{action.target} -> {variant}")
-        except (KeyError, OSError, ValueError) as e:
+        except Exception as e:
             return RemediationResult(action, now, False, f"flag apply failed: {e}")
