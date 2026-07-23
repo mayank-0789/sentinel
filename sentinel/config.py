@@ -8,7 +8,7 @@ class Settings(BaseSettings):
     mcp_url: str
     anthropic_api_key: str
     anthropic_model: str = "claude-opus-4-8"
-    evidence_backend: str = "mcp"          # "mcp" | "query_api"
+    evidence_backend: str = "query_api"    # "mcp" | "query_api"
     flagd_config_path: str
     audit_db_path: str = "sentinel.db"
     otlp_endpoint: str
