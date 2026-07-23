@@ -1,12 +1,15 @@
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from sentinel.models import Incident, Window, IncidentStatus
 
 LOOKBACK = timedelta(minutes=5)
 
 # TODO(day1-findings): confirm SigNoz webhook field paths against a real fired alert
 
-def to_incident(payload: dict, now: datetime) -> Incident:
-    alert = payload["alerts"][0]
+def to_incident(payload: dict, now: datetime) -> Incident | None:
+    alerts = payload.get("alerts") or []
+    if payload.get("status") == "resolved" or not alerts:
+        return None
+    alert = alerts[0]
     labels = alert.get("labels", {})
     fire = alert.get("startsAt")
     end = datetime.fromisoformat(fire.replace("Z", "+00:00")) if fire else now

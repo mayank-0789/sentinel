@@ -23,3 +23,15 @@ def test_to_incident_extracts_core_fields():
 def test_window_is_five_minute_lookback():
     inc = to_incident(PAYLOAD, now=datetime(2026,7,23,10,5,tzinfo=timezone.utc))
     assert (inc.window.end - inc.window.start).total_seconds() == 300
+
+def test_returns_none_for_resolved_status():
+    resolved_payload = {**PAYLOAD, "status": "resolved"}
+    inc = to_incident(resolved_payload, now=datetime(2026,7,23,10,5,tzinfo=timezone.utc))
+    assert inc is None
+
+def test_returns_none_when_no_alerts():
+    empty_alerts_payload = {"status": "firing", "alerts": []}
+    no_alerts_key_payload = {"status": "firing"}
+    now = datetime(2026,7,23,10,5,tzinfo=timezone.utc)
+    assert to_incident(empty_alerts_payload, now=now) is None
+    assert to_incident(no_alerts_key_payload, now=now) is None
