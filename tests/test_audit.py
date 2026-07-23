@@ -1,4 +1,4 @@
-import json
+import json, threading
 from datetime import datetime, timezone
 from sentinel.audit import AuditStore, _enc
 from sentinel.models import (Incident, Window, IncidentStatus, Hypothesis,
@@ -45,3 +45,20 @@ def test_enc_converts_enum_to_value():
     json.dumps(enc)
     assert enc["mode"] == "auto"
     assert enc["action"]["type"] == "flag"
+
+def test_audit_store_usable_from_another_thread(tmp_path):
+    store = AuditStore(str(tmp_path / "a.db"))
+    errors = []
+
+    def worker():
+        try:
+            store.record(_inc())
+            store.get("i1")
+        except Exception as e:
+            errors.append(e)
+
+    t = threading.Thread(target=worker)
+    t.start()
+    t.join()
+    assert errors == []
+    assert store.get("i1")["service"] == "cartservice"
