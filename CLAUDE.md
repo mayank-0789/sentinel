@@ -39,7 +39,7 @@ Everything else: I just do it and report.
 
 **Sentinel** — an autonomous, policy-gated SRE copilot that watches the OpenTelemetry Demo through
 SigNoz, diagnoses incidents via the **SigNoz MCP server + Claude**, applies a guarded fix, and
-**verifies recovery**. Track 01 (AI & Agent Observability); target prize = MacBook. Solo + Claude.
+**verifies recovery**. Track 01 (AI & Agent Observability). Solo + Claude.
 
 Stack: Sentinel in **Python**; Claude via Anthropic API; everything in **Docker Compose**; optional
 Next.js incident-feed UI (stretch). Full architecture + 9 modules + data models: see the spec.
@@ -123,5 +123,9 @@ Then execute the implementation plan via the loop in §4.
 
 ## 10. Status
 
-- **2026-07-15:** Design approved + committed. This manual written. Pre-build — all implementation
-  gated to Jul 20. Next planning artifact: the ordered implementation plan (writing-plans).
+- **2026-07-15:** Design approved + committed; this manual written.
+- **2026-07-23:** Core implementation complete — 13 Python modules, 42 passing unit tests covering the
+  full loop (detect → evidence → reason → policy → remediate → verify → audit) with faked collaborators.
+  SigNoz cast via Foundry (`casting.yaml` + lock committed).
+- **2026-07-26:** Live-stack integration in progress — bring up SigNoz + OTel Demo, wire `compose.yaml`
+  + `Makefile`, capture the four Day-1 unknowns, and prove the scenario E2E (`make verify`).
