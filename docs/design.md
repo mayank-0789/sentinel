@@ -203,11 +203,11 @@ sentinel/
 
 | # | Fault (flagd flag) | Symptom in SigNoz | Expected root cause | Remediation | Policy path |
 |---|---|---|---|---|---|
-| 1 | `cartServiceFailure` | checkout 5xx, cart error-rate spike | cart service returning errors | disable flag (`FlagActuator`) | low risk → **auto-heal** |
-| 2 | `paymentServiceFailure` / `paymentServiceUnreachable` | checkout fails at payment step | payment failing/unreachable | disable flag; if unreachable, restart | low/med → **auto with guard** |
-| 3 | `adServiceHighCpu` / `recommendationServiceCacheFailure` | p99 latency spike, CPU saturation | CPU/cache storm | scale/restart | higher blast radius → **human approval** |
+| 1 | `cartFailure` | checkout 5xx, cart error-rate spike | cart service returning errors | disable flag (`FlagActuator`) | low risk → **auto-heal** |
+| 2 | `paymentFailure` / `paymentUnreachable` | checkout fails at payment step | payment failing/unreachable | disable flag; if unreachable, restart | low/med → **auto with guard** |
+| 3 | `adHighCpu` / `recommendationCacheFailure` | p99 latency spike, CPU saturation | CPU/cache storm | scale/restart | higher blast radius → **human approval** |
 
-> Exact flag names must be verified against the OTel Demo version pulled on Day 1 (see Open Questions).
+> Flag keys verified against the pulled OTel Demo (`src/flagd/demo.flagd.json`); see `day1-findings.md`.
 
 ## 11. Scope — MVP vs stretch
 
