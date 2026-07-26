@@ -1,0 +1,19 @@
+# Sentinel: fan the OpenTelemetry Demo's telemetry into SigNoz.
+# The demo's collector loads this file last and merges it over its base config.
+# NOTE: the collector merges maps but REPLACES arrays — so each pipeline's exporter
+# list repeats the upstream exporters to keep the demo's own backends working too.
+exporters:
+  otlp/signoz:
+    endpoint: "host.docker.internal:4317"
+    tls:
+      insecure: true
+
+service:
+  pipelines:
+    traces:
+      exporters: [otlp_grpc/jaeger, debug, span_metrics, otlp/signoz]
+    metrics:
+      receivers: [docker_stats, http_check/frontend-proxy, host_metrics, nginx, otlp, redis, span_metrics]
+      exporters: [otlp_http/prometheus, debug, otlp/signoz]
+    logs:
+      exporters: [opensearch, debug, otlp/signoz]

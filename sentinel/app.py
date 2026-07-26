@@ -39,7 +39,7 @@ def build_app(orchestrator=None) -> FastAPI:
 # (uvicorn sentinel.app:create_app --factory) and importing build_app in tests
 # never touches real clients/backends.
 def create_app() -> FastAPI:
-    import anthropic
+    from functools import partial
     from sentinel.config import get_settings
     from sentinel.signoz_client import get_backend
     from sentinel.policy import load_policy
@@ -48,19 +48,25 @@ def create_app() -> FastAPI:
     from sentinel.audit import AuditStore
     from sentinel.orchestrator import Orchestrator
     from sentinel.telemetry import setup_tracing
+    from sentinel import reasoner
 
     settings = get_settings()
     setup_tracing("sentinel", settings.otlp_endpoint)
+
+    # No real key → run the reasoner as an offline stub (no spend); with a key → real Claude.
+    key = settings.anthropic_api_key
+    if not key or key.startswith("sk-ant-your-key"):
+        client, reason_fn = None, partial(reasoner.stub_hypothesize, flag=settings.demo_flag)
+    else:
+        import anthropic
+        client, reason_fn = anthropic.Anthropic(api_key=key), reasoner.hypothesize
 
     registry = ActuatorRegistry()
     registry.register(FlagActuator(settings.flagd_config_path))
 
     orchestrator = Orchestrator(
-        get_backend(settings),
-        anthropic.Anthropic(api_key=settings.anthropic_api_key),
-        load_policy("policies/rules.yaml"),
-        registry,
-        AuditStore(settings.audit_db_path),
-        settings.anthropic_model,
+        get_backend(settings), client, load_policy("policies/rules.yaml"),
+        registry, AuditStore(settings.audit_db_path), settings.anthropic_model,
+        reason_fn=reason_fn,
     )
     return build_app(orchestrator=orchestrator)

@@ -21,6 +21,14 @@ SYSTEM = ("You are Sentinel, an SRE copilot. Given a SigNoz incident and correla
           "Prefer disabling a faulty feature flag when the evidence points to one. "
           "Call propose_remediation with a calibrated confidence.")
 
+def stub_hypothesize(incident: Incident, evidence: Evidence, client=None,
+                     model: str = "", *, flag: str = "cartFailure") -> Hypothesis:
+    # Offline stand-in for the Claude reasoner when no ANTHROPIC_API_KEY is set (no spend).
+    # A fixed, clearly-canned hypothesis: disable the demo fault flag. Not a live diagnosis.
+    action = Action(ActionType.FLAG, flag, {"variant": "off"})
+    return Hypothesis(f"{incident.service} {incident.signal} elevated — fault flag '{flag}' enabled",
+                      "Stubbed reasoner (no API key): disable the fault flag.", action, 0.9)
+
 def hypothesize(incident: Incident, evidence: Evidence, client, model: str) -> Hypothesis:
     user = (f"Incident: {incident.service} {incident.signal} severity={incident.severity}\n"
             f"Evidence summary: {evidence.summary}\n"

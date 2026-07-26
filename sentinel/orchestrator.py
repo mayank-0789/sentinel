@@ -4,10 +4,11 @@ from sentinel.models import Incident, IncidentStatus, DecisionMode
 
 class Orchestrator:
     def __init__(self, backend, anthropic_client, policy, registry, audit, model,
-                 baseline_fn=lambda inc: 0.05):
+                 baseline_fn=lambda inc: 0.05, reason_fn=reasoner.hypothesize):
         self.backend, self.client, self.policy = backend, anthropic_client, policy
         self.registry, self.audit, self.model = registry, audit, model
         self.baseline_fn = baseline_fn
+        self.reason_fn = reason_fn
         self.pending = {}
 
     def handle(self, incident: Incident) -> Incident:
@@ -18,7 +19,7 @@ class Orchestrator:
                     incident.status = IncidentStatus.INVESTIGATING
                     evidence = ev.gather(incident, self.backend)
                 with span("hypothesize"):
-                    hyp = reasoner.hypothesize(incident, evidence, self.client, self.model)
+                    hyp = self.reason_fn(incident, evidence, self.client, self.model)
                     incident.status = IncidentStatus.DIAGNOSED
                     self.audit.record(incident, hypothesis=hyp)
                 with span("decide"):

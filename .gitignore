@@ -19,6 +19,9 @@ build/
 # Foundry generated output (regenerated from casting.yaml)
 pours/
 
+# Vendored OTel Demo clone (fetched by `make demo-up`)
+vendor/
+
 # SigNoz / demo data
 data/
 *.db

@@ -1,0 +1,22 @@
+# Sentinel service. SigNoz runs via Foundry (pours/deployment/compose.yaml) and the
+# OTel Demo runs from its own compose; Sentinel reaches both over the host.
+name: sentinel
+services:
+  sentinel:
+    build: .
+    container_name: sentinel
+    env_file: .env
+    environment:
+      # reach SigNoz (published on the host) from inside the container
+      SIGNOZ_URL: http://host.docker.internal:8080
+      SIGNOZ_QUERY_API_URL: http://host.docker.internal:8080/api/v3
+      MCP_URL: http://host.docker.internal:8000
+      OTLP_ENDPOINT: http://host.docker.internal:4317
+      FLAGD_CONFIG_PATH: /flagd/demo.flagd.json
+    ports:
+      - "9099:9099"
+    volumes:
+      # mount the demo's flagd config so FlagActuator can flip flags (flagd hot-reloads)
+      - ${DEMO_DIR:-./vendor/otel-demo}/src/flagd:/flagd
+    extra_hosts:
+      - "host.docker.internal:host-gateway"

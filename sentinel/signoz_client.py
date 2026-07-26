@@ -52,11 +52,12 @@ def _log_query_payload(service: str, start: datetime, end: datetime, limit: int)
     }
 
 class QueryApiBackend:
-    def __init__(self, base_url: str):
+    def __init__(self, base_url: str, api_key: str = ""):
         self.base = base_url.rstrip("/")
+        self.headers = {"SIGNOZ-API-KEY": api_key} if api_key else {}
 
     def _query_range(self, payload: dict) -> dict:
-        r = httpx.post(f"{self.base}/query_range", json=payload, timeout=30)
+        r = httpx.post(f"{self.base}/query_range", json=payload, headers=self.headers, timeout=30)
         r.raise_for_status()
         return r.json()
 
@@ -75,7 +76,7 @@ class QueryApiBackend:
             .get("data", {}).get("result", [])
 
     def get_topology(self) -> dict:
-        r = httpx.get(f"{self.base}/service_map", timeout=30)  # endpoint per findings
+        r = httpx.get(f"{self.base}/service_map", headers=self.headers, timeout=30)  # endpoint per findings
         return r.json() if r.status_code == 200 else {}
 
 class McpBackend:
@@ -106,5 +107,5 @@ class McpBackend:
 
 def get_backend(settings) -> SignozBackend:
     if settings.evidence_backend == "query_api":
-        return QueryApiBackend(settings.signoz_query_api_url)
+        return QueryApiBackend(settings.signoz_query_api_url, settings.signoz_api_key)
     return McpBackend(settings.mcp_url)

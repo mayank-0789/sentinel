@@ -48,6 +48,10 @@ Built for the **Agents of SigNoz** hackathon (WeMakeDevs × SigNoz) — Track 01
 | `sentinel/app.py` | FastAPI (webhook + approval + health) |
 | `policies/rules.yaml` | policy rules |
 | `casting.yaml` / `.lock` | Foundry cast of SigNoz + MCP server |
+| `compose.yaml` · `Dockerfile` · `Makefile` | run Sentinel + one-command stack orchestration |
+| `deploy/otelcol-config-extras.yml` | routes the OTel Demo's telemetry into SigNoz |
+| `scenarios/inject.py` | flip a flagd flag to inject / clear a fault |
+| `docs/` | design spec, implementation plan, Day-1 findings |
 
 ## Run the tests
 
@@ -56,6 +60,39 @@ python -m venv .venv && . .venv/bin/activate   # Python 3.11+
 pip install -e '.[dev]'
 pytest -q                                        # 42 passing
 ```
+
+## Run it live
+
+**Prerequisites:** Docker, [`foundryctl`](https://github.com/SigNoz/foundry), Python 3.11+.
+
+```bash
+cp .env.example .env         # set SIGNOZ_API_KEY (below); ANTHROPIC_API_KEY optional
+make up                      # SigNoz (Foundry) + OTel Demo (wired to SigNoz) + Sentinel
+```
+
+One-time SigNoz setup (first run):
+1. Open http://localhost:8080 and create the admin user.
+2. **Settings → API Keys** → create a key → set it in `.env` as `SIGNOZ_API_KEY`.
+3. **Settings → Alert Channels** → add a **Webhook** → `http://host.docker.internal:9099/webhook`.
+4. Add an alert rule (e.g. cart-service error rate) routed to that channel.
+
+Then drive the incident:
+
+```bash
+make demo      # flip the `cartFailure` flag on → SigNoz alerts → Sentinel diagnoses,
+               # applies the guarded fix, and verifies recovery
+make verify    # unit tests + live health check
+make down      # tear it all down
+```
+
+**Reasoner modes:** with no `ANTHROPIC_API_KEY`, the reasoner runs as an offline **stub** (canned
+hypothesis, no spend) so the whole loop still runs end-to-end; set a real key to enable live Claude
+root-cause diagnosis. Every other stage — evidence, policy, remediation, verification, self-telemetry,
+audit — behaves identically either way.
+
+> **Verified:** the unit suite (42 tests) is green, the live SigNoz stack is healthy, and flag-toggle
+> remediation is confirmed against the real demo config. The alert→webhook→heal→verify path uses the
+> SigNoz setup above plus your own (or the stub) reasoner.
 
 ## Design
 
