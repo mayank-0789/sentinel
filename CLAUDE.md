@@ -3,8 +3,8 @@
 This file is the standing instruction set for Claude working on Sentinel. Read it every session.
 Deep technical detail lives in the design spec — this file is *how we operate*, not *what we build*.
 
-- **Source of truth (what):** `docs/superpowers/specs/2026-07-15-sentinel-sre-copilot-design.md`
-- **Implementation plan (how, ordered):** `docs/superpowers/plans/` *(created via writing-plans)*
+- **Source of truth (what):** `docs/design.md`
+- **Implementation plan (how, ordered):** `docs/implementation-plan.md`
 
 ---
 
@@ -25,10 +25,10 @@ Everything else: I just do it and report.
 
 ---
 
-## 2. ⛔ Hard constraints (DQ risk — protect these)
+## 2. ⛔ Hard constraints (hackathon rules)
 
-- **No implementation before 2026-07-20.** Rule: *"coding and design work should begin only after the hackathon starts."* Git history is visible to judges. **Pre-Jul-20 commits = planning docs ONLY** (spec, this file, README, plan). All code / `casting.yaml` / tooling installs / config land in commits **dated Jul 20 or later.**
-- **Disclose AI assistance** in the submission — this project is built with Claude; say so. Non-disclosure = DQ.
+- **No implementation before 2026-07-20.** Per the rule that coding begins only after the event starts, pre-Jul-20 commits are planning docs only (spec, this file, README, plan); all code, `casting.yaml`, tooling, and config land in commits dated Jul 20 or later.
+- **Disclose AI assistance** in the submission — this project is built with Claude; say so (required by the rules).
 - **Ship `casting.yaml` + `casting.yaml.lock`** in the repo (judges re-run via Foundry).
 - **Blog** only on Medium/Dev.to/Substack (never a LinkedIn post), genuine effort, real code + screenshots.
 - **SigNoz is mandatory** and must be used deeply (traces+logs+metrics+dashboards+alerts+MCP).

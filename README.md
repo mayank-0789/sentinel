@@ -60,7 +60,7 @@ pytest -q                                        # 42 passing
 ## Design
 
 Full architecture, the 9 modules, data models, scope, and timeline live in the design spec:
-[`docs/superpowers/specs/2026-07-15-sentinel-sre-copilot-design.md`](docs/superpowers/specs/2026-07-15-sentinel-sre-copilot-design.md).
+[`docs/design.md`](docs/design.md).
 
 ---
 

@@ -1,6 +1,6 @@
 # Sentinel Implementation Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
+> This plan is executed task-by-task, test-first. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Build Sentinel — a policy-gated, self-healing SRE copilot that detects a SigNoz alert, gathers evidence via the SigNoz MCP server + Claude, decides auto-heal vs. human-approval, applies a guarded fix, and verifies recovery — all while tracing itself into SigNoz.
 
@@ -13,12 +13,12 @@
 Copied verbatim from the spec + CLAUDE.md. Every task implicitly includes these.
 
 - **No code committed before 2026-07-20.** (Today is 2026-07-23 — this constraint has passed; all code commits are now allowed and must be dated Jul 20 or later. Pre-Jul-20 commits are planning docs only.)
-- **AI assistance MUST be disclosed** in the submission. Non-disclosure = DQ.
+- **AI assistance is disclosed** in the submission (required by the hackathon rules).
 - **Ship `casting.yaml` + `casting.yaml.lock`** in the repo (judges re-run via Foundry).
 - **SigNoz used deeply** — traces + logs + metrics + dashboards + alerts + MCP + Sentinel's own telemetry.
 - **Lean. Simplest thing that works. Ask before adding layers.**
 - **Comments minimal — only where the *why* isn't obvious; 1–2 lines max; never stacked/blocked. Use `#` in the Python core, `//` in the Next.js/TS UI. Names + structure carry meaning, not comments.**
-- **Human gates (STOP — never do solo):** making the repo public / pushing to a remote; submitting hackathon forms; publishing the blog; spending money/credits beyond free/local tiers; anything irreversible or outward-facing; changing scope/track.
+- **Human decisions (not automated):** making the repo public / pushing to a remote; submitting hackathon forms; publishing the blog; spending money or credits; anything irreversible or outward-facing; changing scope or track.
 - **Never advance on red.** Evidence before any "it works" claim (`make verify` green).
 
 ## Timeline reality (as of 2026-07-23)
@@ -181,8 +181,8 @@ sentinel/                          # repo root (git already initialised)
 │   └── e2e/
 │       └── test_scenario1.py      (Task 17, Playwright)
 └── docs/
-    ├── superpowers/specs/2026-07-15-sentinel-sre-copilot-design.md
-    ├── superpowers/plans/2026-07-23-sentinel-implementation.md   # this file
+    ├── design.md                  # design spec
+    ├── implementation-plan.md     # this file
     ├── day1-findings.md           # captured de-risk artifact    (Task 1)
     └── decisions-log.md           # running decisions            (all tasks)
 ```
@@ -229,7 +229,7 @@ Expected: the exact alert JSON (field names for status, labels, annotations, tim
 Run: inspect the flagd config mounted by the demo compose.
 Expected: exact flag names + the file path / API used to flip them.
 
-- [ ] **Step 6: Confirm Anthropic credits (HUMAN GATE if credits must be purchased).** Verify `ANTHROPIC_API_KEY` works with a one-line `messages.create` smoke call using `claude-sonnet-5`. If no credits are available, **STOP and flag Mayank** (spending is a human gate).
+- [ ] **Step 6: Confirm Anthropic credits (human decision if credits must be purchased).** Verify `ANTHROPIC_API_KEY` works with a one-line `messages.create` smoke call using `claude-sonnet-5`. If no credits are available, pause and confirm with the maintainer (spending is a human decision).
 
 Run: minimal `anthropic` SDK call.
 Expected: a 200 response, recorded as "credits OK" in the artifact. On failure → flag, do not proceed to Task 12.
@@ -1157,7 +1157,7 @@ Expected: PASS.
 - [ ] **Step 5: Live smoke (uses real credits — small call).**
 
 Run: a one-incident script against the real Anthropic client; confirm a sensible `flag`/`cartServiceFailure` hypothesis prints. Record token usage in decisions-log.
-Expected: valid `Hypothesis`. On auth failure → this is the Task 1 Step 6 gate; flag Mayank.
+Expected: valid `Hypothesis`. On auth failure → this is the Task 1 Step 6 gate; pause for the maintainer.
 
 - [ ] **Step 6: Commit.**
 
@@ -1617,16 +1617,16 @@ git commit -m "feat: Sentinel Ops dashboard + self-metrics (MTTR, success, appro
 - Create/finalize: `README.md`
 - Create: `docs/blog-draft.md`
 
-- [ ] **Step 1: Write `README.md`** — one-line pitch, architecture diagram (from spec §4), **one-command setup** (`make up`), the demo script (`make demo`), the judging-criteria mapping, and an explicit **"Built with Claude — AI assistance disclosed"** section (DQ-protection constraint).
+- [ ] **Step 1: Write `README.md`** — one-line pitch, architecture diagram (from spec §4), **one-command setup** (`make up`), the demo script (`make demo`), the judging-criteria mapping, and an explicit **"Built with Claude — AI assistance disclosed"** section (required by the hackathon rules).
 
 - [ ] **Step 2: Record the demo video** — break (`make demo`) → SigNoz alert fires → Sentinel diagnoses → auto-heals → verifies → show the Sentinel trace + Ops dashboard. Keep < 3 min.
 
 - [ ] **Step 3: Draft the tutorial blog** in `docs/blog-draft.md` (~1000–1500 words, real code + screenshots) for Medium/Dev.to/Substack.
 
-- [ ] **Step 4: HUMAN GATES — STOP and get Mayank for each:**
+- [ ] **Step 4: Human decisions — confirm with the maintainer for each:**
   - Make the repo public / push to remote.
   - Publish the blog.
-  - Submit the registration + project forms (spec §15 links).
+  - Submit the registration + project forms.
   - Confirm the AI-disclosure text before anything goes public.
 
 - [ ] **Step 5: Commit (local).**

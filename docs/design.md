@@ -8,11 +8,11 @@
 |---|---|
 | **Project** | Sentinel |
 | **Event** | Agents of SigNoz Hackathon (WeMakeDevs × SigNoz, sponsored by AWS) |
-| **Track** | Track 01 — AI & Agent Observability (prize: MacBook per team member) |
-| **Team** | Solo (Mayank) + Claude as builder/CTO |
+| **Track** | Track 01 — AI & Agent Observability |
+| **Team** | Solo build + Claude (autonomous builder) |
 | **Hackathon window** | Jul 20–26, 2026 |
 | **Spec date** | 2026-07-15 |
-| **Status** | Approved design — pending spec review, then implementation plan |
+| **Status** | Approved design — implemented (see `implementation-plan.md` and the repo) |
 
 ---
 
@@ -28,14 +28,13 @@ SigNoz's own "Noz" assistant is the **policy/guardrail layer + closed verificati
 observing itself** — it doesn't just answer questions, it *acts within guardrails and proves the fix
 worked*.
 
-**Why this wins:** it sits dead-center on Track 01, exercises the fullest possible surface of SigNoz
-(traces + logs + metrics + dashboards + alerts + MCP + Sentinel's own telemetry — the highest-weighted
-judging criterion), and produces a "break it live, watch it self-heal in <60s" demo that judges
-remember.
+**Why it matters:** it sits dead-center on Track 01, exercises the fullest possible surface of SigNoz
+(traces + logs + metrics + dashboards + alerts + MCP + Sentinel's own telemetry), and produces a
+"break it live, watch it self-heal in under a minute" demonstration of governed autonomy.
 
 ## 2. Success criteria
 
-**Winning demo (must be true):**
+**Target demo (must be true):**
 1. A real distributed system (OTel Demo) runs and streams telemetry into SigNoz.
 2. Injecting a fault causes a SigNoz alert to fire and reach Sentinel automatically.
 3. Sentinel gathers correlated evidence via the SigNoz MCP server and states a correct root cause.
@@ -53,7 +52,7 @@ remember.
 | Technical Excellence | MCP client + agent reasoning + policy engine + actuators + verification |
 | **Best Use of SigNoz** | traces+logs+metrics+dashboards+alerts+MCP **and** Sentinel's own telemetry |
 | User Experience | Live incident timeline (UI or Slack feed), clean dashboards |
-| Presentation Quality | Live self-heal demo + README + tutorial blog (also chases the blog prize) |
+| Presentation Quality | Live self-heal demo + README + tutorial blog |
 
 ## 3. Non-goals (YAGNI)
 
@@ -175,7 +174,7 @@ PolicyRule    { action_type, risk, auto_execute_if_confidence_gte,
 
 ## 8. Tech stack & repo layout
 
-- **Sentinel:** Python (best MCP-client + Anthropic SDK + OTel ecosystem; matches Mayank's ML language).
+- **Sentinel:** Python (strongest MCP-client + Anthropic SDK + OpenTelemetry ecosystem).
 - **Reasoning:** Claude via the Anthropic API (tool use / MCP).
 - **Everything in Docker Compose** for one-command reproducibility (aligns with Foundry + judges re-run).
 - **UI (if built):** Next.js/React.
@@ -251,13 +250,13 @@ compound multi-fault incidents · `RollbackActuator` · cost/confidence-calibrat
 - Whether Anthropic API access/credits are in hand for the week.
 
 ## 15. Submission checklist
-- [ ] Registered (forms.gle/uxaLXAXmtKwz8uYh9)
-- [ ] Project submitted (forms.gle/wf9tFYcksrk6P4Zy8)
+- [ ] Registered for the hackathon
+- [ ] Project submitted
 - [ ] Repo public with `casting.yaml` + `casting.yaml.lock`
-- [ ] AI-assistance disclosed (required — non-disclosure = DQ)
+- [ ] AI-assistance disclosed (required)
 - [ ] README with architecture + one-command setup + demo script
 - [ ] Demo video (break → self-heal → verify)
-- [ ] Tutorial blog on Medium/Dev.to/Substack (chases blog prize; ~1000–1500 words, real code + screenshots)
+- [ ] Tutorial blog on Medium/Dev.to/Substack (~1000–1500 words, real code + screenshots)
 
 ## 16. References
 - Hackathon: https://www.wemakedevs.org/hackathons/signoz · rules: /hackathons/signoz/rules · blog guide: /hackathons/signoz/blog-guide

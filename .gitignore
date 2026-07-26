@@ -5,6 +5,10 @@ __pycache__/
 venv/
 .env
 *.egg-info/
+.pytest_cache/
+
+# Internal build/agent working notes — not part of the public repo
+.superpowers/
 
 # Node / UI
 node_modules/
